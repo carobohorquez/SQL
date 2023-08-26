@@ -1,0 +1,121 @@
+ #-------- Clase  25/08/2023
+SELECT 
+	COUNT(*)
+FROM 
+accidentes
+WHERE
+instante IS NULL;
+
+DESC accidentes;
+
+
+###  fecha actual de ejecucion del quiery, la fechas se deben cerrar conel siguiente formato 'yyyy-mm-dd'
+##PRIMERO ES LA FECHA  MAS CERCANA 
+## TRUNCATE, CORTA LA VARIABLE DE TIPO NUMERICA, RETIRANDO LOS DECIMALES 
+SELECT 
+	instante,
+	NOW(),
+	TRUNCATE(DATEDIFF(NOW(),instante)/365,0) as anios_a_hoy,
+	
+	### EXTRAE EL MES EN  NUMERO 
+	MONTH(instante) AS mes,
+	MONTHNAME(instante) AS mes_string,
+	
+	##  Dia 
+	DAY(instante)  AS dia_del_mes,
+	## dia de la semana  donde cae la fecha 
+	DAYNAME(instante) AS dia_de_la_semana
+	
+FROM 
+accidentes
+WHERE
+instante IS NOT NULL;
+
+### el '_' nos dice la cantida de caracteres que van antes de los buscados y terminen  en este caso en ra 
+## se puede hacer tambien '___ca%'
+SELECT 
+	*
+FROM
+jugadoras
+WHERE
+posicion LIKE '_____ra';
+
+
+### OPERACIONES DE TEXTO
+SELECT
+	tipo,
+	#upper--> para convertir el dato en mayuscula 
+	UPPER(tipo) AS mayuculas,
+	LOWER(tipo) AS minusculas,
+	### NOS  DEVUELVE LA LONGITUD DE LA CADENA DE CARACTERES, incluyendo los espacio
+	LENGTH (tipo) AS  longitud_texto,
+	REPLACE (tipo,'Con ','') AS  replaza_un_valor,
+	REPLACE (LOWER(tipo) ,'con ','') AS  replaza_un_valor,
+	
+	## trae el texto hasta antes del caracter especificado 
+	concesion,
+	SUBSTRING_INDEX(concesion,'ZN',1) AS  hasta_zn,
+	CONCAT(dia,' - ',placa)
+	
+FROM
+accidentes;
+
+## GROUP BY
+SELECT 
+	club,
+	SUM(goles) 
+FROM
+jugadoras
+
+GROUP BY club
+
+ORDER BY 2 DESC;
+
+SELECT 
+	club,
+	posicion,
+	SUM(goles)
+FROM
+jugadoras
+
+GROUP BY 1,2
+ORDER BY 1,3 DESC;
+
+#### ejecicio 1
+SELECT 
+	dia,
+	COUNT(*) 
+FROM 
+accidentes
+GROUP BY 1
+## TAMBIEN SE PUEDE  COLOCAR EL COUNT(*) EN EL ODER BY
+ORDER BY 2 DESC;
+
+##
+SELECT 
+	dia,
+	franja_horaria,
+	COUNT(*) 
+FROM 
+accidentes
+GROUP BY 1,2
+## TAMBIEN SE PUEDE  COLOCAR EL COUNT(*) EN EL ODER BY
+ORDER BY 3 DESC;
+
+######
+SELECT 
+	EMPLOYEE_ID,
+	SALARY,
+	SALARY*1.1 AS new_salary_employee_more,
+	SALARY*0.9 AS new_salary_employee_less,
+	SALARY*COMMISSION_PCT + SALARY  AS salary_with_commission,
+	SALARY*(COMMISSION_PCT+1) AS salary_with_commission_better,
+	(SALARY*(COMMISSION_PCT+1))-SALARY  AS diff_comision_salary
+FROM 
+employees;
+
+
+
+
+
+
