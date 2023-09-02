@@ -1,0 +1,372 @@
+## CREACION  DE UNA TABLA
+
+CREATE TABLE empleados
+
+## Se especifica los campos de la columna
+
+(id int primary key,
+
+nombre Varchar(50),
+
+apellidos Varchar(50),
+
+fecha_nacimiento date,
+
+## cantidad de decimales se deben especificar
+
+salario decimal (12,2)
+
+);
+
+
+
+SELECT *FROM empleados;
+
+
+
+DESC empleados;
+
+
+
+#2)INSERT
+
+## si lo ejecutamos  2 veces con la misma llave primaria da error
+
+INSERT INTO empleados 
+
+(id,nombre,apellidos,fecha_nacimiento,salario)
+
+VALUES (1,'Alan','brito','2000-01-01',950000);
+
+## se puede omitir los nombres de la columnas, si respetamos el orden y los valores de los datos a insertar
+
+INSERT INTO empleados 
+
+VALUES (2,'Armando','skandalo','1985-10-31',100000);
+
+
+
+## si  quiere insertar a un o varios campos, no necesariamente todos
+
+INSERT INTO empleados 
+
+(id,apellidos,nombre)
+
+VALUES (3,'Brinco','Aquiles');
+
+
+
+INSERT INTO empleados (id,nombre,apellidos,salario)
+
+VALUES (4,'Debora','Cabezas',1200000),(5,'Susana','Oria',850000);
+
+
+
+##UPDATE-> MODIFICAR LOS DATOS
+
+#TIP-> CREAR UNA CONSULTA CON LAS  CONDICIONALES A APLICAR Y NOS ASEGURAMOS DEL CAMPO
+
+UPDATE empleados 
+
+SET salario=700000
+
+WHERE  id=3
+
+
+
+### CREAR UNA COPIA DE LA TABLA
+
+CREATE TABLE empleados_cp AS SELECT *FROM empleados;
+
+
+
+SELECT 
+
+*
+
+FROM
+
+empleados_cp l;
+
+
+
+
+
+# fevchas en null
+
+
+
+SELECT *FROM empleados 
+
+WHERE fecha_nacimiento IS NULL;
+
+
+
+UPDATE empleados
+
+SET fecha_nacimiento='1990-01-01'
+
+WHERE fecha_nacimiento IS NULL;
+
+
+
+## SUBIR EL SALARIO A LOS EMPLEADOS QUE EMPIECEN CON A UN 10%
+
+SELECT *FROM empleados 
+
+WHERE nombre LIKE 'A%';
+
+
+
+UPDATE empleados
+
+SET salario=salario*1.1
+
+WHERE nombre LIKE 'A%';
+
+
+
+SELECT *FROM empleados;
+
+
+
+
+
+
+
+## EMPLEADOS MENOS 50 AÑOS + 100000
+
+
+
+SELECT 
+
+*
+
+FROM
+
+empleados 
+
+WHERE (DATEDIFF(CURRENT_DATE(),fecha_nacimiento)/360)<50;
+
+
+
+UPDATE empleados
+
+SET salario=salario+100000
+
+WHERE (DATEDIFF(CURRENT_DATE(),fecha_nacimiento)/360)<50;
+
+
+
+
+
+## DELETE
+
+SELECT*FROM empleados 
+
+where  fecha_nacimiento='1990-01-01';
+
+
+
+DELETE FROM empleados 
+
+where  fecha_nacimiento='1990-01-01';
+
+
+
+#
+
+
+
+########################################################################################
+
+#                              CREACION TABLA CATEGORIA                                #
+
+########################################################################################
+
+CREATE TABLE categoria
+
+(id int primary key,
+
+## ESPECIFICAR QUE NO SE PERMITEN  VALORES NULOS Y DEBEN SER UNICOS AL SE UNA TABLA CON REGISTROS UNICOS
+
+categoria Varchar(100) NOT NULL UNIQUE);
+
+
+
+DESC  categoria;
+
+
+
+########################################################################################
+
+#                               CREACION TABLA PRODUCTOS                               #
+
+########################################################################################
+
+
+
+CREATE TABLE productos
+
+(id int primary key,
+
+## ESPECIFICAR QUE NO SE PERMITEN  VALORES NULOS Y DEBEN SER UNICOS AL SE UNA TABLA CON REGISTROS UNICOS
+
+nombre Varchar(100) NOT NULL UNIQUE,
+
+precio_venta decimal(10,2),
+
+idcategoria int,
+
+##UNIR LA CLAVE PRIMARIA DE CATEGORIA CON LA CLAVE FORANEA DE PRODUCTOS
+
+#--> la categoria enlace con
+
+constraint idcat_fk foreign key (idcategoria) references categoria(id));
+
+DESC  productos;
+
+
+
+
+
+########################################################################################
+
+#                               CREACION TABLA CLIENTES                             #
+
+########################################################################################
+
+CREATE TABLE clientes
+
+(id int primary key auto_increment,
+
+nombre Varchar(100) NOT NULL,
+
+email Varchar(250) UNIQUE,
+
+f_nacimiento DATE);
+
+
+
+DESC clientes;
+
+
+
+########################################################################################
+
+#                               CREACION TABLA FACTURAS                               #
+
+########################################################################################
+
+CREATE TABLE facturas
+
+(id int primary key,
+
+fecha Varchar(100) NOT NULL,
+
+idcliente int,
+
+constraint idclien_fk foreign key (idcliente) references clientes(id));
+
+
+
+DESC facturas;
+
+
+
+
+
+
+
+########################################################################################
+
+#                               CREACION TABLA FACTURAS                               #
+
+########################################################################################
+
+CREATE TABLE facturas
+
+(id int primary key,
+
+fecha Varchar(100) NOT NULL,
+
+idcliente int,
+
+constraint idclien_fk foreign key (idcliente) references clientes(id));
+
+
+
+DESC facturas;
+
+
+
+########################################################################################
+
+#                        CREACION TABLA DETALLE FACTURAS                               #
+
+########################################################################################
+
+CREATE TABLE detalle_facturas
+
+(id int primary key,
+
+idproducto int,
+
+idfactura int,
+
+cantida int,
+
+constraint idpro_fk foreign key (idproducto) references productos(id),
+
+constraint idfact_fk foreign key (idfactura) references facturas(id));
+
+
+
+DESC detalle_facturas;
+
+
+
+########################################################################################
+
+#                               CREACION TABLA PROVEEDORES                            #
+
+########################################################################################
+
+CREATE TABLE proveedores
+
+(id int primary key,
+
+nombre Varchar(100) NOT NULL);
+
+
+
+DESC proveedores;
+
+
+
+
+
+########################################################################################
+
+#                       CREACION TABLA PROVEEDORES- PRODUCTOS                          #
+
+########################################################################################
+
+## como la relacion de muchos a muchos de proveedores con productos, debemos hacer una tercera tabla donde coexistan ambos
+
+CREATE TABLE productos_proveedor
+
+(id int primary key,
+
+idproducto int,
+
+idproveedor int,
+
+constraint idprovee_fk foreign key (idproducto) references productos(id),
+
+constraint idproduc_fk foreign key (idproveedor) references proveedores(id));
+
+
+
+DESC productos_proveedor;
+
