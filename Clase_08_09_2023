@@ -1,0 +1,207 @@
+## Crear dos tablas, libros y editoriales, 
+#las cuales deberán estar relacionadas por un campo que permita asociar las editoriales a  cada libro
+CREATE table  editoriales
+(id int primary key,
+nombre   varchar(100)  NOT NULL UNIQUE);
+
+DESC editoriales;
+
+DETE
+
+CREATE TABLE libros
+(id int primary key,
+nombre varchar(100)  UNIQUE,
+paginas int,
+ideditorial int, 
+constraint id_edf foreign key(ideditorial) references editoriales(id));
+
+DESC  libros;
+
+
+ INSERT INTO editoriales (id,nombre)
+ Values (1,"kl"),(2,"planeta"),(3,"O'really");
+
+
+SELECT * FROM editoriales e;
+
+
+INSERT INTO libros (id,nombre,paginas,ideditorial)
+values	(1,"Bases de datos",100,1),
+		(2,"Python en 5h",100,3),
+		(3,"R e 30m",1,NULL);
+	
+SELECT * FROM libros;
+### MODIFICCACION DE LA TABLA, DONDE PODEMOS AGREGAR, CAMBIAR DE TIPO DE DATO
+## ALTER TABLE
+#-->Eliminar una columna:DROP COLUMN
+#-->Adicionar columna:ADD COLUMN
+#-->Modificar el nombre de columna:RENAME COLUMN
+#-->Modificar el tipo de datos: MODIFY COLUMN
+#-->Eliminar una clave forénea:DROP FOREIGN KEY
+#-->Agregar una clave foránea:ADD CONSTRAINT
+
+ALTER TABLE editoriales MODIFY COLUMN nombre  varchar(100);
+
+UPDATE editoriales 
+SET nombre="Konrad lorenz"
+WHERE id=1;
+
+SELECT 
+	a.nombre  as nombre_libro,
+	a.paginas,
+	b.nombre AS nombre_editorial
+FROM 
+libros  AS a 
+## SOLOS LOS DATOS QUE SE ENCUENTRAN EN AMBAS TABLAS
+INNER JOIN editoriales AS b ON a.ideditorial =b.id;
+
+
+##LEFT JOIN
+
+SELECT 
+	a.nombre  AS nombre_libro,
+	a.paginas,
+	b.nombre AS nombre_editorial
+FROM 
+libros  AS a 
+LEFT JOIN editoriales AS b ON a.ideditorial =b.id;
+
+##RIGTH  JOIN
+
+SELECT 
+	b.nombre AS nombre_editorial,
+	a.nombre  AS nombre_libro,
+	a.paginas
+FROM 
+editoriales AS b
+RIGHT JOIN libros  AS a  ON a.ideditorial =b.id;
+
+
+ 
+##Crear tablas para resgistrar información de cantantes, canciones y álbumes.  Se requiere poder registrar las canciones que tiene un album y los cantantes de cada canción.
+CREATE TABLE cantantes
+(id int primary key,
+nombre varchar(100) UNIQUE NOT NULL,
+f_nacimiento varchar(100),
+sexo varchar(100));
+
+DESC cantantes 
+
+
+CREATE TABLE albumes
+(id INT PRIMARY KEY,
+nombre varchar(100),
+copias int );
+
+DESC albumes;
+
+## constraint id_edf foreign key(ideditorial) references editoriales(id));
+CREATE TABLE canciones
+(id INT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+reproducciones INT,
+idcantante INT ,
+idalbum INT,
+CONSTRAINT id_can FOREIGN KEY(idcantante) REFERENCES cantantes(id),
+CONSTRAINT id_al FOREIGN KEY(idalbum) REFERENCES albumes(id)
+);
+
+
+
+DESC  canciones 
+
+
+INSERT INTO  canciones (id,nombre,reproducciones,idcantante,idalbum)
+VALUES	(1,"Aguita amrilla",10000000,1,1),
+		(2,"Chica cocodrilo",1000000,2,2)
+
+INSERT INTO cantantes (id,nombre,f_nacimiento,sexo)
+VALUES 	(1,"Toreros",'2000-10-10',"M"),
+		(2,"Hombres G",'1990-10-10',"M"),
+		(3,"Elimer Figueroa",'1950-01-01',"M");
+
+
+
+INSERT INTO albumes (id,nombre,copias)
+VALUES	(1,"Album torero",50000000),
+		(2,"Grandes Exitos",2500000),
+		(3,"nadie lo compro",0);
+##1) listar nombre de cancion, nombre cantante edad
+SELECT 
+	a.nombre AS nombre_cancion,
+	b.nombre AS nombre_cantante,
+	TRUNCATE(DATEDIFF(now(),b.f_nacimiento)/365,0) as edad
+FROM canciones AS a 
+LEFT JOIN cantantes  AS b ON a.idcantante =b.id 
+
+##
+SELECT 
+	a.nombre AS nombre_cancion,
+	b.nombre AS nombre_album,
+	a.reproducciones
+
+FROM canciones AS a 
+LEFT JOIN albumes AS b ON a.idalbum=b.id
+
+
+
+###
+SELECT 
+	a.nombre AS nombre_cancion,
+	b.nombre AS nombre_album,
+	c.nombre 
+FROM canciones AS a 
+LEFT JOIN albumes AS b ON a.idalbum=b.id
+LEFT JOIN cantantes AS c ON a.idcantante=c.id
+
+###
+SELECT 
+	a.nombre AS nombre_cancion,
+	c.nombre AS nombre_cantante
+FROM canciones AS a 
+LEFT JOIN albumes AS b ON a.idalbum=b.id
+LEFT JOIN cantantes AS c ON a.idcantante=c.id
+WHERE
+b.copias <=250000
+
+
+
+################################################################
+#                             BASE                             #
+################################################################
+CREATE TABLE  tipo_identificacion
+(id INT PRIMARY KEY,
+tipo_identificación VARCHAR(10) UNIQUE NOT NULL)
+
+DESC tipo_identificacion
+
+
+CREATE TABLE Tratamientos
+(id INT PRIMARY KEY,
+tratamiento VARCHAR(100) UNIQUE)
+
+DESC Tratamientos
+
+## constraint id_edf foreign key(ideditorial) references editoriales(id));
+CREATE TABLE pacientes
+(id INT PRIMARY KEY ,
+nombres VARCHAR(100),
+apellidos VARCHAR(100),
+sexo VARCHAR(100),
+fecha_nacimiento VARCHAR(100),
+identificacion INT,
+id_tipo_identificacion INT,
+CONSTRAINT  id_iden FOREIGN KEY (id_tipo_identificacion) REFERENCES tipo_identificacion(id)
+)
+DESC  pacientes
+
+
+CREATE TABLE medicos
+(id INT PRIMARY KEY,
+nombres VARCHAR(100),
+apellidos VARCHAR(100),
+identificacion INT UNIQUE,
+id_tipo_identificacion INT,
+CONSTRAINT  id_iden_med FOREIGN KEY (id_tipo_identificacion) REFERENCES tipo_identificacion(id)
+)
+DESC medicos
