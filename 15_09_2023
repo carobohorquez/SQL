@@ -1,0 +1,174 @@
+################################################################
+#                             BASE                             #
+################################################################
+CREATE TABLE  tipo_identificacion
+(id INT PRIMARY KEY,
+tipo_identificación VARCHAR(10) UNIQUE NOT NULL)
+
+DESC tipo_identificacion
+
+
+CREATE TABLE Tratamientos
+(id INT PRIMARY KEY,
+tratamiento VARCHAR(100) UNIQUE)
+
+DESC Tratamientos
+
+## constraint id_edf foreign key(ideditorial) references editoriales(id));
+CREATE TABLE pacientes
+(id INT PRIMARY KEY ,
+nombres VARCHAR(100),
+apellidos VARCHAR(100),
+sexo VARCHAR(100),
+fecha_nacimiento VARCHAR(100),
+identificacion INT,
+id_tipo_identificacion INT,
+CONSTRAINT  id_iden FOREIGN KEY (id_tipo_identificacion) REFERENCES tipo_identificacion(id)
+)
+DESC  pacientes
+
+
+CREATE TABLE medicos
+(id INT PRIMARY KEY,
+nombres VARCHAR(100),
+apellidos VARCHAR(100),
+identificacion INT UNIQUE,
+id_tipo_identificacion INT,
+CONSTRAINT  id_iden_med FOREIGN KEY (id_tipo_identificacion) REFERENCES tipo_identificacion(id)
+)
+DESC medicos
+
+CREATE TABLE procedimientos 
+(id INT,
+fecha VARCHAR(100),
+valor INT,
+idpaciente INT,
+idmedico INT,
+idtratamiento INT,
+## cada lineas compuesta por los siguietes campos debe ser unica, dentro de la tabla, identificadola como el id
+PRIMARY KEY (id),
+UNIQUE KEY rtunid (idpaciente,idmedico,idtratamiento,fecha),
+CONSTRAINT  id_pacien FOREIGN KEY (idpaciente) REFERENCES pacientes(id),
+CONSTRAINT  id_med FOREIGN KEY (idmedico) REFERENCES medicos(id),
+CONSTRAINT  id_trata FOREIGN KEY (idtratamiento) REFERENCES Tratamientos(id)
+)
+
+
+DESC procedimientos 
+
+
+################################################################
+#                   POBLACION DE TABLAS                        #
+################################################################
+
+INSERT INTO `tipo_identificacion` 
+	VALUES(1,"TI"),(2,"CC"),(3,"PT"),(4,"CE");
+
+INSERT INTO `Tratamientos` 
+	VALUES(1,"Maquillaje Permanente"),
+		(2,"Tratamientos Faciales"),
+		(3,"Depilación Con Cera"),
+		(4,"Busto"),
+		(5,"Adelgazantes"),
+		(6,"Caída De Cabello"),
+		(7,"Otros"),
+		(8,"Tratamiento Postoperatorio");
+
+
+INSERT INTO `pacientes` 
+VALUES 
+		(1,"Elba","Zurita","F",'1980-01-01',789654,2),
+		(2,"Elsa","Pato","F",'1970-12-30',123456,4),
+		(3,"Yola","Prieto","F",'1975-04-08',741852,3),
+		(4,"Alan","Brito","M",'1956-09-30',503852,3),
+		(5,"Armando","Puertas","M",'1960-04-10',479951,2),
+		(6,"Luz","Rojas","F",'1951-08-18',456050,4),
+		(7,"Blanca","Nieves","F",'1982-02-02',432149,3),
+		(8,"Rosa","Paredes","F",'2001-11-11',408248,2),
+		(9,"Juan","Maliyo","M",'2000-12-25',384347,4),
+		(10,"Esteban","Quito","M",'1971-10-31',360446,3);
+
+INSERT INTO `medicos` 
+VALUES (1,'Jose Luis','Lamata Feliz',112233,2),
+		(2,'Aquiles','Bailo',778899,2),
+		(3,'Susana','Torio',1445565,2);
+
+
+
+INSERT INTO `procedimientos`
+VALUES 
+(1,"2020-09-11",100000,1,1,3),
+(2,"2020-08-04",120000,3,1,5),
+(3,"2019-12-12",35000,1,2,7),
+(4,"2019-10-01",87000,2,2,8),
+(5,"2019-10-15",40000,3,1,1),
+(6,"2020-08-04",100000,1,1,3),
+(7,"2020-02-01",250000,4,3,2),
+(8,"2019-10-19",250000,5,1,3),
+(9,"2020-08-04",902000,6,2,4),
+(10,"2020-02-01",750000,5,3,5),
+(11,"2019-10-19",1200000,6,3,7),
+(12,"2019-10-20",480000,7,3,8),
+(13,"2019-10-20",800000,8,1,1),
+(14,"2020-08-14",1000000,9,2,4),
+(15,"2020-08-15",1550000,10,3,4);
+
+
+
+
+SELECT 
+	t.tratamiento,
+	COUNT(*) 
+FROM 
+procedimientos p 
+INNER JOIN Tratamientos t  ON t.id =p.idtratamiento 
+
+GROUP BY 1
+ORDER BY  2 DESC;
+
+### 
+
+SELECT 
+	t.tratamiento,
+	p2.sexo,
+	COUNT(*) AS cantidad
+FROM 
+procedimientos p 
+INNER JOIN Tratamientos t  ON t.id =p.idtratamiento 
+INNER JOIN  pacientes p2 ON p2.id =p.idpaciente 
+
+GROUP BY 1,2
+ORDER BY  1,3 DESC;
+
+####
+SELECT 
+	m.*,
+	t.tratamiento 
+FROM medicos m 
+INNER JOIN procedimientos p  ON p.idmedico =m.id 
+INNER JOIN Tratamientos t ON  p.idtratamiento =t.id
+
+
+#####
+SELECT 
+	p2.sexo,
+	SUM(p.valor) pago_total
+FROM
+procedimientos p 
+INNER JOIN pacientes p2 ON p.idpaciente =p2.id
+GROUP BY 1;
+
+######
+SELECT 
+t.tratamiento,
+SUM(p.valor) 
+FROM
+procedimientos p
+INNER JOIN Tratamientos t ON p.idtratamiento =t.id 
+
+GROUP BY 1
+## condicional para operaciones de agrupamiento
+ HAVING SUM(p.valor)> 1200000
+ 
+ 
+#### 
