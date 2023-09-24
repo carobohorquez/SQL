@@ -1,0 +1,269 @@
+############################################################################# 
+#                                 TALLER                                    #
+#                Datos estructurados y no estructurados                     #
+#############################################################################
+# 616232033 - VELANDIA TORRES VICTOR HUGO
+# 616232040 - BOHORQUEZ BURGOS CAROLINA
+ 
+## PUNTO 1
+CREATE TABLE identificacion
+(id INT PRIMARY KEY,
+tipo_identidicacion VARCHAR (50));
+
+DESC identificacion;
+
+
+CREATE TABLE metodo_pago
+(id INT PRIMARY KEY,
+metodo VARCHAR(100));
+
+DESC metodo_pago;
+
+
+CREATE TABLE evento
+(id INT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+apellido VARCHAR(100) NOT NULL,
+descripcion VARCHAR(150) NOT NULL,
+fecha VARCHAR(150) NOT NULL,
+hora TIMESTAMP NOT NULL,
+ubicacion VARCHAR(150) NOT NULL,
+tipo_de_evento VARCHAR(150) NOT NULL,
+estado VARCHAR(150) NOT NULL
+);
+
+DESC evento;
+
+
+CREATE TABLE cliente
+(id INT PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+apellido VARCHAR(100) NOT NULL,
+direccion VARCHAR(100),
+correo_electronico VARCHAR(100),
+numero_de_telefono VARCHAR(100),
+id_identificacion INT,
+CONSTRAINT  id_fkiden FOREIGN KEY (id_identificacion) REFERENCES identificacion(id),
+numero_identificacion INT
+);
+
+
+DESC cliente;
+
+CREATE TABLE  proveedor
+(id INT  PRIMARY KEY,
+nombre  VARCHAR(100) NOT NULL,
+direccion VARCHAR(100),
+correo_electronico VARCHAR(100),
+numero_de_telefono VARCHAR(100),
+servicio_que_ofrece VARCHAR(100),
+id_evento INT,
+CONSTRAINT  id_fkeven FOREIGN KEY (id_evento) REFERENCES evento(id)
+);
+
+DESC proveedor;
+
+CREATE TABLE entrada
+(id INT PRIMARY KEY,
+precio INT,
+tipo_entrada VARCHAR(100),
+numero_entradas_vendidas INT,
+numero_entrada_disponible INT ,
+id_evento INT,
+CONSTRAINT  id_fkevento FOREIGN KEY (id_evento) REFERENCES evento(id)
+);
+
+DESC entrada;
+
+CREATE TABLE factura
+(id INT,
+numero_factura INT,
+fecha VARCHAR(100),
+cant_boleta INT,
+valor_total INT,
+id_metodo_pago INT,
+id_evento INT,
+id_cliente INT,
+PRIMARY KEY (id),
+UNIQUE KEY r_fact (id_metodo_pago,id_evento,id_cliente,fecha),
+CONSTRAINT  id_for FOREIGN KEY (id_metodo_pago) REFERENCES metodo_pago(id),
+CONSTRAINT  id_fkevent FOREIGN KEY (id_evento) REFERENCES evento(id),
+CONSTRAINT  id_client FOREIGN KEY (id_cliente) REFERENCES cliente(id)
+);
+
+DESC factura
+
+
+### PUNTO 2 
+INSERT INTO identificacion 
+VALUES
+		(1,"TI"),
+		(2,"CC"),
+		(3,"PT"),
+		(4,"CE");
+
+SELECT 
+	*
+FROM
+identificacion i;
+
+	
+INSERT INTO metodo_pago 
+VALUES 
+		(1,"Tarjeta de Credito"),
+		(2,"Tarjeta Debito"),
+		(3,"Consignación Efectivo"),
+		(4,"Transferencia"),
+		(5,"Efectivo");
+
+SELECT 
+	*
+FROM metodo_pago mp;
+
+
+INSERT INTO evento 
+VALUES 
+(1,"JOSE","GOMEZ","Plan todo incluido","2023-10-29","2023-10-29 14:30:00","Club Norte","Cena Romantica","Planificación"),
+(2,"ANTONIO","RESTREPO","Plan mariachi","2023-10-31","2023-10-31 10:00:00","Club Sur","Fiesta Halloween ","Canfirmado"),
+(3,"JUAN","PEREZ","Plan Banquete","2023-10-15","2023-10-15 20:00:00","La castellana","Show magia","Canfirmado"),
+(4,"MANUEL","LOPEZ","Plan siempre quice","2023-09-28","2023-09-28 15:00:00","La vaca Loca","concierto","Planificación"),
+(5,"FRANCISCO","GOMEZ","Plan todo incluido","2023-11-15"," 2023-11-15 18:00:00","Suba","Noche de risas","Confirmado"),
+(6,"LUIS","RESTREPO","Plan mariachi","2023-11-01"," 2023-11-01 12:00:00","Usme","Mujeres a la Plancha","Confirmado"),
+(7,"JAVIER","PEREZ","Plan Banquete","2023-10-31"," 2023-10-31 18:00:00","Club Norte","Fiesta Halloween","Planificación"),
+(8,"MARIA","LOPEZ","Plan siempre quice","2023-12-08","2023-12-08 10:00:00","Gun Club","Hombres a la Plancha","Cancelado"),
+(9,"CARMEN","GOMEZ","Plan todo incluido","2023-11-02","2023-11-02 17:00:00","Archies","Concierto","Cancelado"),
+(10,"ANA","RESTREPO","Plan mariachi","2023-10-31","2023-10-31 20:00:00","Club Nogal","Fiesta Halloween ","Confirmado");
+
+
+SELECT 
+*
+FROM evento e;
+
+
+
+INSERT INTO  proveedor
+VALUES 
+(1,"Meseros a domicilio sas","KR 76 B 52 A 80","fernando_rivera_b@gmail.com","6017616728","Meseros",4),
+(2,"Catering Col SA","CR. 64A NO.2B-21","nubia_ayala@gmail.com","3108271569","catering",6),
+(3,"Somos Logistica LTDA","CL 20 SUR 63 15","nelly_judith_joya_herrera@gmail.com","6014690528","Logistica",3),
+(4,"Seguridad Eventos SAS","KR 73 A 10 B 82","martha_patricia_perez_herrera@gmail.com","3204445515","Seguridad",7),
+(5,"Dislicores33 SA","CR. 105C NO.16F-24","gonzalez_diaz_olga_lucia@gmail.com","3123211545","Licores y bebidas",2),
+(6,"Logistica Integral SA","CL 42 A 87 I 10 SUR","yenni_marcela_rozo_garcia@gmail.com","6012882633","Logistica",1),
+(7,"Food Services SA","CL 24 94 31","diana_alexandra_lotta_rojas@gmail.com","6015391158","Catering",9),
+(8,"Los Chefs Col LTDA","CL 38 SUR 29 16","mery_suarez@gmail.com","3135111066","Chefs",8),
+(9,"Trans col LTDA","TR. 87A NO.81-68","luz_astrid_ramírez_ahumada@gmail.com","3113323212","Transporte",10),
+(10,"La Frontera Transportes SA","CL 97 67 A 05","fanny_barreto_gutierrez@gmail.com","3013306666","transporte",5);
+
+
+SELECT 
+	*
+FROM proveedor;
+
+INSERT INTO cliente
+VALUES
+(1,"GEMA","PEREZ","CL 86 B 99 62 IN 101","pachamama@gmail.com","7616773",2,80207222),
+(2,"ALEXANDRA","VILLANUEVA","KR 19 56 81 SUR","llanerosclub@gmail.com","3118271510",1,43259144),
+(3,"VALERIA","FUQUEN","CL 143 B 146 A 21","valeriaFunquen23@hotmail.com","4690595",3,41512121),
+(4,"EMILIA","LOPEZ","KR 85 8 A 36","Emilia.Lopez.321@gmail.com","3224445598",4,60606073),
+(5,"ELISA","GOMEZ","CL 84 90 15","Egomez@hotmail.com","3103211516",1,80208555),
+(6,"VANESA","RESTREPO","CL 9 SUR 4 54","RestrepoVane@hotmail.com","2882600",3,1020229660),
+(7,"AINHOA","PEREZ","CL 55 10 25","Inoka32Pere@gmail.com","5391100",4,4456335),
+(8,"VIRGINIA","VILLANUEVA","CLL. 4 SUR NO.15A-13","LavirginiaVill@hotmail.com","3215111013",4,95956533),
+(9,"EUGENIA","FUQUEN","KR 62 100 54","Fuquen3565EU@gmail.com","3143323215",1,433585),
+(10,"DIANA","RESTREPO","CR. 19 NO.3-14 Y 3","DianaMorarestrrpo@gmail.com","3003306606",2,3518487),
+
+SELECT 
+*
+FROM cliente;
+
+
+INSERT INTO entrada 
+VALUES
+(1,80000,"General",1,9,1),
+(2,100000,"VIP",2,8,2),
+(3,80000,"General",3,7,3),
+(4,100000,"VIP",4,6,4),
+(5,80000,"General",5,5,5),
+(6,100000,"VIP",6,4,6),
+(7,80000,"General",7,3,7),
+(8,80000,"General",8,2,8),
+(9,80000,"General",9,1,9),
+(10,100000,"VIP",10,0,10);
+
+
+
+SELECT 
+*
+FROM 
+entrada;
+
+
+
+INSERT INTO factura
+VALUES
+(1,"2082","2023-01-09","3","240000","1","10","1"),
+(2,"1144","2023-09-15","4","320000","2","8","3"),
+(3,"1249","2023-09-18","8","800000","1","1","4"),
+(4,"2183","2023-09-20","12","960000","1","3","5"),
+(5,"2273","2023-09-28","5","500000","3","4","7"),
+(6,"1891","2023-10-31","1","100000","5","7","6"),
+(7,"2157","2023-10-31","7","560000","4","5","7"),
+(8,"2217","2023-11-03","10","1000000","1","6","2"),
+(9,"1588","2023-11-11","9","720000","2","2","3"),
+(10,"1909","2023-10-15","18","1800000","4","9","10");
+
+
+SELECT 
+*
+FROM factura;
+
+
+## PUNTO 3
+#A) Nombre de los eventos, número de entradas vendidas y número de entradas disponibles.
+SELECT 
+	e.tipo_de_evento,
+	e2.numero_entradas_vendidas,
+	e2.numero_entrada_disponible 
+FROM evento e 
+INNER JOIN entrada e2 ON e.id=e2.id_evento;
+
+
+#B) Número de la factura, fecha de la factura, nombre del evento, valor total de la factura, nombre y número de identificación del cliente.
+SELECT 
+	f.numero_factura,
+	f.fecha,
+	e.tipo_de_evento,
+	f.valor_total,
+	CONCAT( c.nombre," ",c.apellido) AS nombre_cliente,
+	c.numero_identificacion 
+FROM factura f 
+LEFT JOIN evento e ON f.id_evento =e.id
+LEFT JOIN cliente c  ON f.id_cliente =c.id;
+
+
+#C)Nombre del proveedor, nombre del evento. 
+SELECT 
+	p.nombre AS nombre_proveedor,
+	e.tipo_de_evento 
+FROM proveedor p
+LEFT JOIN evento e ON p.id_evento =e.id;
+
+#D)Nombres de los clientes y nombre de los eventos a los que asiste
+SELECT 
+	CONCAT(c.nombre," ",c.apellido) AS nombre_cliente,
+	e.tipo_de_evento
+FROM 
+cliente c
+INNER JOIN factura f ON f.id_cliente =c.id
+INNER JOIN evento e ON f.id_evento =e.id;
+
+#E)Clientes más frecuentes
+SELECT 
+	CONCAT(c.nombre," ",c.apellido) AS nombre_cliente,
+	COUNT(f.numero_factura)
+FROM 
+factura f 
+LEFT JOIN cliente c ON f.id_cliente=c.id 
+
+GROUP BY 1
+ORDER BY 2 DESC;
