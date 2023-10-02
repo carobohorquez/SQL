@@ -1,0 +1,144 @@
+# clase 29/09/2023
+CREATE TABLE divipola (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  codpto varchar(2) DEFAULT NULL,
+  comnpo varchar(5) DEFAULT NULL,
+  cocnpo varchar(8) DEFAULT NULL,
+  nombredepartamento varchar(60) DEFAULT NULL,
+  nombremunicipio varchar(60) DEFAULT NULL,
+  nombrecentropoblado varchar(100) DEFAULT NULL,
+  tipocentropoblado varchar(20) DEFAULT NULL,
+  latitud decimal(10,8) DEFAULT NULL,
+  longitud decimal(10,8) DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+
+### NUMERO 1O DIGITOS, PERO 8 PARA LA PARTE DECIMAL
+
+
+DESC divipola,
+
+SELECT 
+*
+FROM 
+divipola d 
+
+
+#### CREACION TABLAS CLIENTES #####
+
+CREATE TABLE  a_clientes 
+(id VARCHAR(5) PRIMARY KEY,
+nombre_cliente VARCHAR(100),
+fecha_nacimiento DATE,
+correo  VARCHAR(100),
+fecha_registro DATE,
+grupo VARCHAR (1),
+iddivipobla INT,
+CONSTRAINT id_div FOREIGN KEY  (iddivipobla) REFERENCES divipola(id)
+);
+
+DESC a_clientes;
+
+SELECT 
+COUNT(*) 
+FROM a_clientes ac;
+### CREACION DE LA VISTA--> se ejecutan en tiempo real
+CREATE VIEW base_geo_cliente AS 
+SELECT 
+	ac.id,
+	ac.nombre_cliente ,
+	d.nombredepartamento,
+	d.nombremunicipio,
+	d.nombrecentropoblado,
+	d.latitud,
+	d.longitud
+FROM 
+a_clientes ac 
+INNER JOIN divipola d  ON  ac.iddivipobla =d.id
+
+SELECT * FROM base_geo_cliente bgc 
+
+
+CREATE TABLE a_pedidos (
+  id_pedido int NOT NULL,
+  fecha date DEFAULT NULL,
+  idcliente varchar(5) DEFAULT NULL,
+  idmediopago int DEFAULT NULL,
+  PRIMARY KEY (id_pedido),
+  KEY idc2_fk (idcliente),
+  KEY idm_fk (idmediopago),
+  CONSTRAINT idc2_fk FOREIGN KEY (idcliente) REFERENCES a_clientes (id),
+  CONSTRAINT idm_fk FOREIGN KEY (idmediopago) REFERENCES sp_medio_pago (id)
+);
+
+CREATE TABLE sp_detalle_pedido (
+  id int NOT NULL,
+  linea int DEFAULT NULL,
+  idpedido int DEFAULT NULL,
+  idproducto int DEFAULT NULL,
+  cantidad int DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY idpe_fk (idpedido),
+  KEY idpr_fk (idproducto),
+  CONSTRAINT idpe_fk FOREIGN KEY (idpedido) REFERENCES a_pedidos (id_pedido),
+  CONSTRAINT idpr_fk FOREIGN KEY (idproducto) REFERENCES sp_productos (id)
+);
+
+DESC  a_pedidos 
+SELECT * FROM a_pedidos 
+
+SELECT COUNT(*) FROM sp_detalle_pedido 
+
+
+insert into sp_medio_pago(id,nom_medio_pago) values(1,'Tarjeta debito');
+insert into sp_medio_pago(id,nom_medio_pago) values(2,'Tarjeta crédito');
+insert into sp_medio_pago(id,nom_medio_pago) values(3,'Efectivo');
+
+
+
+DESC sp_medio_pago 
+SELECT * FROM sp_medio_pago smp 
+
+
+SELECT 
+fecha,
+smp.nom_medio_pago 
+FROM 
+a_pedidos ap 
+LEFT JOIN sp_medio_pago smp  ON  ap.idmediopago =smp.id
+
+#Listar nombre de cliente, fecha de compra y medio de pago utilizado
+	SELECT 
+	ac.nombre_cliente,
+	fecha,
+	smp.nom_medio_pago 
+	
+	FROM
+	a_pedidos ap 
+	LEFT JOIN sp_medio_pago smp ON  ap.idmediopago =smp.id
+	LEFT JOIN a_clientes ac ON ac.id=ap.idcliente;
+#Listar nombre de los productos y cantidad comprados por el cliente ‘C0011’.
+
+CREATE VIEW table_pedidos AS 
+SELECT 
+a.id_pedido,
+b.nombre_cliente,
+a.fecha,
+c.nom_medio_pago,
+e.nombre AS nombre_producto,
+d.linea,
+d.cantidad,
+f.nom_categoria,
+g.nom_proveedor 
+FROM 
+a_pedidos a
+LEFT JOIN a_clientes b ON a.idcliente =b.id 
+LEFT JOIN sp_medio_pago c ON a.idmediopago =c.id 
+LEFT JOIN sp_detalle_pedido d ON a.id_pedido=d.idpedido 
+LEFT JOIN sp_productos e ON e.id =d.idproducto 
+LEFT JOIN sp_categoria f ON f.id = e.idcategoria 
+LEFT JOIN sp_proveedor g ON g.id =e.idproveedor ;
+
+SELECT * FROM table_pedidos;
+
+
